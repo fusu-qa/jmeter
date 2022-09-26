@@ -1,7 +1,7 @@
 
 新增功能:
 <br />
-HTTP代理服务器：一次录制中，根据method、url、parameter去重
+HTTP代理服务器：一次录制过程中，根据method、url、parameter去重
 <br />
 
 以下操作均在Macos操作系统
@@ -50,3 +50,12 @@ NewDriver.main()
 <br />
 --开始录制
 ![img_2.png](img_2.png)
+
+同一个接口请求多次
+<br />
+1、改造后的jmeter只录制一份
+![img_3.png](img_3.png)
+<br />
+2、原生jmeter录制多份
+<br />
+![img_4.png](img_4.png)

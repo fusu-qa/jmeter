@@ -68,7 +68,8 @@ public final class NewDriver {
         StringTokenizer tok = new StringTokenizer(initiaClasspath, File.pathSeparator);
         if (tok.countTokens() == 1
                 || (tok.countTokens()  == 2 // Java on Mac OS can add a second entry to the initial classpath
-                    && OS_NAME_LC.startsWith("mac os x")// $NON-NLS-1$
+//                    && OS_NAME_LC.startsWith("mac os x")// $NON-NLS-1$
+                    && OS_NAME_LC.startsWith("Ignore")// $NON-NLS-1$
                    )
            ) {
             File jar = new File(tok.nextToken());

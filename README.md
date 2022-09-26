@@ -1,8 +1,17 @@
 
 新增功能:
 <br />
-HTTP代理服务器：一次录制过程中，根据method、url、parameter去重
+<li>HTTP代理服务器：一次录制过程中，根据method、url、parameter去重
+<li>json断言，大于某个数字，支持整数和小数点(小数点位数最长支持10位)
+
+![img_9.png](img_9.png)
+
+![img_8.png](img_8.png)
 <br />
+
+HTTP代理服务器调用栈：
+<br />
+![img_6.png](img_6.png)
 
 以下操作均在Macos操作系统
 <br />
@@ -36,7 +45,10 @@ simpleHttpRequests.clear();
 安装chrome浏览器插件：SwitchyOmega
 <br />
 指定录制域名使用代理：localhost:8888
-
+<br />
+![img_5.png](img_5.png)
+<br />
+![img_7.png](img_7.png)
 IDEA启动：
 <br />
 --双击createDist

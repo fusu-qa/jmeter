@@ -17,11 +17,9 @@
 
 package org.apache.jmeter.assertions.gui;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -37,6 +35,7 @@ import net.miginfocom.swing.MigLayout;
 
 /**
  * Java class representing GUI for the {@link JSONPathAssertion} component in JMeter
+ *
  * @since 4.0
  */
 @GUIMenuSortOrder(2)
@@ -51,6 +50,7 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
     private static final String JSON_ASSERTION_NULL = "json_assertion_null";
     private static final String JSON_ASSERTION_INVERT = "json_assertion_invert";
     private static final String JSON_ASSERTION_TITLE = "json_assertion_title";
+    private static final String JSON_ASSERTION_GREATERTHAN = "json_assertion_greaterthan";
 
     protected JTextField jsonPath = null;
     protected JSyntaxTextArea jsonValue = null;
@@ -58,6 +58,7 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
     protected JCheckBox expectNull = null;
     protected JCheckBox invert = null;
     protected JCheckBox isRegex;
+    protected JCheckBox greaterThan = null;
 
     public JSONPathAssertionGui() {
         init();
@@ -78,7 +79,7 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
     protected JPanel buildPanel() {
         JPanel panel = new JPanel(new MigLayout("fillx, wrap 2, insets 0", "[][fill,grow]"));
 
-        jsonPath =  new JTextField();
+        jsonPath = new JTextField();
         panel.add(JMeterUtils.labelFor(jsonPath, JSON_ASSERTION_PATH));
         panel.add(jsonPath, "span, growx");
 
@@ -90,7 +91,7 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
         panel.add(JMeterUtils.labelFor(isRegex, JSON_ASSERTION_REGEX));
         panel.add(isRegex, "span");
 
-        jsonValue =  JSyntaxTextArea.getInstance(5, 60);
+        jsonValue = JSyntaxTextArea.getInstance(5, 60);
         panel.add(JMeterUtils.labelFor(jsonValue, JSON_ASSERTION_EXPECTED_VALUE));
         panel.add(JTextScrollPane.getInstance(jsonValue));
 
@@ -101,6 +102,10 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
         invert = new JCheckBox();
         panel.add(JMeterUtils.labelFor(invert, JSON_ASSERTION_INVERT));
         panel.add(invert, "span");
+
+        greaterThan = new JCheckBox();
+        panel.add(JMeterUtils.labelFor(greaterThan, JSON_ASSERTION_GREATERTHAN));
+        panel.add(greaterThan, "span");
         return panel;
     }
 
@@ -113,6 +118,8 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
         expectNull.setSelected(false);
         invert.setSelected(false);
         isRegex.setSelected(true);
+        greaterThan.setSelected(false);
+
     }
 
     @Override
@@ -138,6 +145,7 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
             jpAssertion.setExpectNull(expectNull.isSelected());
             jpAssertion.setInvert(invert.isSelected());
             jpAssertion.setIsRegex(isRegex.isSelected());
+            jpAssertion.setGreaterThan(greaterThan.isSelected());
         }
     }
 
@@ -152,6 +160,7 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
             expectNull.setSelected(jpAssertion.isExpectNull());
             invert.setSelected(jpAssertion.isInvert());
             isRegex.setSelected(jpAssertion.isUseRegex());
+            greaterThan.setSelected(jpAssertion.isGreaterThan());
         }
     }
 

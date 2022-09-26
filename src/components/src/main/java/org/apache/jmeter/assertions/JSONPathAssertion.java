@@ -22,6 +22,7 @@ import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.testelement.AbstractTestElement;
 import org.apache.jmeter.testelement.ThreadListener;
@@ -39,6 +40,7 @@ import com.jayway.jsonpath.JsonPath;
 /**
  * This is main class for JSONPath Assertion which verifies assertion on
  * previous sample result using JSON path expression
+ *
  * @since 4.0
  */
 public class JSONPathAssertion extends AbstractTestElement implements Serializable, Assertion, ThreadListener {
@@ -50,12 +52,11 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
     public static final String EXPECT_NULL = "EXPECT_NULL";
     public static final String INVERT = "INVERT";
     public static final String ISREGEX = "ISREGEX";
+    public static final String GREATERTHAN = "GREATERTHAN";
 
-    private static final boolean USE_JAVA_REGEX = !JMeterUtils.getPropDefault(
-            "jmeter.regex.engine", "oro").equalsIgnoreCase("oro");
+    private static final boolean USE_JAVA_REGEX = !JMeterUtils.getPropDefault("jmeter.regex.engine", "oro").equalsIgnoreCase("oro");
 
-    private static ThreadLocal<DecimalFormat> decimalFormatter =
-            ThreadLocal.withInitial(JSONPathAssertion::createDecimalFormat);
+    private static ThreadLocal<DecimalFormat> decimalFormatter = ThreadLocal.withInitial(JSONPathAssertion::createDecimalFormat);
 
     private static DecimalFormat createDecimalFormat() {
         DecimalFormat decimalFormatter = new DecimalFormat("#.#");
@@ -63,6 +64,7 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
         decimalFormatter.setMinimumFractionDigits(1);
         return decimalFormatter;
     }
+
     public String getJsonPath() {
         return getPropertyAsString(JSONPATH);
     }
@@ -103,6 +105,14 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
         return getPropertyAsBoolean(INVERT);
     }
 
+    public void setGreaterThan(boolean greaterThan) {
+        setProperty(GREATERTHAN, greaterThan);
+    }
+
+    public boolean isGreaterThan() {
+        return getPropertyAsBoolean(GREATERTHAN);
+    }
+
     public void setIsRegex(boolean flag) {
         setProperty(ISREGEX, flag);
     }
@@ -113,13 +123,11 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
 
     private void doAssert(String jsonString) {
         Object value = JsonPath.read(jsonString, getJsonPath());
-
         if (!isJsonValidationBool()) {
             if (value instanceof JSONArray) {
                 JSONArray arrayValue = (JSONArray) value;
                 if (arrayValue.isEmpty() && !JsonPath.isPathDefinite(getJsonPath())) {
-                    throw new IllegalStateException("JSONPath is indefinite and the extracted Value is an empty Array." +
-                            " Please use an assertion value, to be sure to get a correct result. " + getExpectedValue());
+                    throw new IllegalStateException("JSONPath is indefinite and the extracted Value is an empty Array." + " Please use an assertion value, to be sure to get a correct result. " + getExpectedValue());
                 }
             }
             return;
@@ -130,8 +138,15 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
                 return;
             }
         } else {
-            if ((isExpectNull() && value == null)
-                    || isEquals(value)) {
+            if (isGreaterThan()) {
+                if (isGreaterThan(value)) {
+                    return;
+                } else {
+                    String msg = "Value expected greaterThan to be '%s', but found '%s'";
+                    throw new IllegalStateException(String.format(msg, getExpectedValue(), objectToString(value)));
+                }
+            }
+            if ((isExpectNull() && value == null) || isEquals(value)) {
                 return;
             }
         }
@@ -155,8 +170,7 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
         }
 
         for (Object subj : value.toArray()) {
-            if ((subj == null && isExpectNull())
-                    || isEquals(subj)) {
+            if ((subj == null && isExpectNull()) || isEquals(subj)) {
                 return true;
             }
         }
@@ -177,6 +191,83 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
             Object expected = JSONValue.parse(getExpectedValue());
             return Objects.equals(expected, subj);
         }
+    }
+
+    /**
+     * 大于
+     * 支持整数，小数
+     *
+     * @param subj 实际结果
+     * @return boolean
+     */
+    private boolean isGreaterThan(Object subj) {
+        String expectedValue = getExpectedValue();
+        if (subj == null || StringUtils.isBlank(expectedValue)) {
+            return false;
+        }
+        String actualValue = subj.toString();
+        if (validateNumber(actualValue) && validateNumber(expectedValue)) {
+            int compareTo = Double.valueOf(actualValue).compareTo(Double.valueOf(expectedValue));
+            return compareTo > 0;
+        }
+        return false;
+    }
+
+    /**
+     * 大于等于
+     * 支持整数，小数
+     *
+     * @param subj 实际结果
+     * @return boolean
+     */
+    private boolean isGreaterThanOrEqual(Object subj) {
+        return false;
+    }
+
+    /**
+     * 小于
+     * 支持整数，小数
+     *
+     * @param subj 实际结果
+     * @return boolean
+     */
+    private boolean isLessThan(Object subj) {
+        return false;
+    }
+
+    /**
+     * 小于等于
+     * 支持整数，小数
+     *
+     * @param subj 实际结果
+     * @return boolean
+     */
+    private boolean isLessThanOrEqual(Object subj) {
+        return false;
+    }
+
+    /**
+     * 包含
+     * 支持字符串
+     *
+     * @param subj
+     * @return boolean
+     */
+    private boolean contains(Object subj) {
+        return false;
+    }
+
+    /**
+     * 判断是否是整数或者是小数
+     *
+     * @param str 目标字符串
+     * @return boolean
+     */
+    private boolean validateNumber(String str) {
+        if (StringUtils.isBlank(str)) {
+            return false;
+        }
+        return str.matches("[+-]?[0-9]+(\\.[0-9]{1,10})?");
     }
 
     @Override

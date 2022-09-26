@@ -5045,6 +5045,7 @@ please ensure that you select "<code>Store the message using MIME (raw)</code>" 
     <properties>
         <property name="Assert JSON Path exists" required="Yes">Path to JSON element for assert.</property>
         <property name="Additionally assert value" required="No">Select checkbox if you want make assert with some value</property>
+        <property name="GreaterThan" required="No">GreaterThan to  a value</property>
         <property name="Match as regular expression" required="No">Select checkbox if you want use regular expression</property>
         <property name="Expected Value" required="No">Value for assert or regular expression for match</property>
         <property name="Expect null" required="No">Select checkbox if you expect null</property>

@@ -45,12 +45,12 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
     private static final long serialVersionUID = -6008018002423594040L;
     private static final String JSON_ASSERTION_PATH = "json_assertion_path";
     private static final String JSON_ASSERTION_VALIDATION = "json_assertion_validation";
+    private static final String JSON_ASSERTION_GREATERTHAN = "json_assertion_greaterthan";
     private static final String JSON_ASSERTION_REGEX = "json_assertion_regex";
     private static final String JSON_ASSERTION_EXPECTED_VALUE = "json_assertion_expected_value";
     private static final String JSON_ASSERTION_NULL = "json_assertion_null";
     private static final String JSON_ASSERTION_INVERT = "json_assertion_invert";
     private static final String JSON_ASSERTION_TITLE = "json_assertion_title";
-    private static final String JSON_ASSERTION_GREATERTHAN = "json_assertion_greaterthan";
 
     protected JTextField jsonPath = null;
     protected JSyntaxTextArea jsonValue = null;
@@ -87,6 +87,10 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
         panel.add(JMeterUtils.labelFor(jsonValidation, JSON_ASSERTION_VALIDATION));
         panel.add(jsonValidation, "span");
 
+        greaterThan = new JCheckBox();
+        panel.add(JMeterUtils.labelFor(greaterThan, JSON_ASSERTION_GREATERTHAN));
+        panel.add(greaterThan, "span");
+
         isRegex = new JCheckBox();
         panel.add(JMeterUtils.labelFor(isRegex, JSON_ASSERTION_REGEX));
         panel.add(isRegex, "span");
@@ -102,10 +106,6 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
         invert = new JCheckBox();
         panel.add(JMeterUtils.labelFor(invert, JSON_ASSERTION_INVERT));
         panel.add(invert, "span");
-
-        greaterThan = new JCheckBox();
-        panel.add(JMeterUtils.labelFor(greaterThan, JSON_ASSERTION_GREATERTHAN));
-        panel.add(greaterThan, "span");
         return panel;
     }
 
@@ -166,7 +166,10 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
 
     @Override
     public void stateChanged(ChangeEvent e) {
-        jsonValue.setEnabled(jsonValidation.isSelected() && !expectNull.isSelected());
-        isRegex.setEnabled(jsonValidation.isSelected() && !expectNull.isSelected());
+        // 控件联动
+        jsonValidation.setEnabled(!greaterThan.isSelected() && !expectNull.isSelected());
+        jsonValue.setEnabled((jsonValidation.isSelected() || greaterThan.isSelected()) && !expectNull.isSelected());
+        isRegex.setEnabled(jsonValidation.isSelected() && !expectNull.isSelected() && !greaterThan.isSelected());
+        greaterThan.setEnabled(!jsonValidation.isSelected() && !expectNull.isSelected() && !isRegex.isSelected());
     }
 }

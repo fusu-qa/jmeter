@@ -123,6 +123,14 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
 
     private void doAssert(String jsonString) {
         Object value = JsonPath.read(jsonString, getJsonPath());
+        if (isGreaterThan()) {
+            if (isGreaterThan(value)) {
+                return;
+            } else {
+                String msg = "Value expected greaterThan to be '%s', but found '%s'";
+                throw new IllegalStateException(String.format(msg, getExpectedValue(), objectToString(value)));
+            }
+        }
         if (!isJsonValidationBool()) {
             if (value instanceof JSONArray) {
                 JSONArray arrayValue = (JSONArray) value;
@@ -138,14 +146,6 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
                 return;
             }
         } else {
-            if (isGreaterThan()) {
-                if (isGreaterThan(value)) {
-                    return;
-                } else {
-                    String msg = "Value expected greaterThan to be '%s', but found '%s'";
-                    throw new IllegalStateException(String.format(msg, getExpectedValue(), objectToString(value)));
-                }
-            }
             if ((isExpectNull() && value == null) || isEquals(value)) {
                 return;
             }
@@ -203,14 +203,18 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
     private boolean isGreaterThan(Object subj) {
         String expectedValue = getExpectedValue();
         if (subj == null || StringUtils.isBlank(expectedValue)) {
-            return false;
+            String msg = "expectedValue or actualValue is null, expectedValue='%s', actualValue='%s'";
+            throw new IllegalStateException(String.format(msg, expectedValue, subj));
         }
+
         String actualValue = subj.toString();
-        if (validateNumber(actualValue) && validateNumber(expectedValue)) {
-            int compareTo = Double.valueOf(actualValue).compareTo(Double.valueOf(expectedValue));
-            return compareTo > 0;
+        if (!validateNumber(actualValue) || !validateNumber(expectedValue)) {
+            String msg = "expectedValue or actualValue is not number, expectedValue='%s', actualValue='%s'";
+            throw new IllegalStateException(String.format(msg, expectedValue, actualValue));
         }
-        return false;
+
+        int compareTo = Double.valueOf(actualValue).compareTo(Double.valueOf(expectedValue));
+        return compareTo > 0;
     }
 
     /**

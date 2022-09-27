@@ -71,7 +71,7 @@ tar -czf jmeter-bin.tar.gz bin lib
 
 ## http录制样本
 jmeter/blob/master/HTTP代理服务器.jmx
-### 注意：
+
 ![img_12.png](img_12.png)
 
 ## HTTP代理服务器调用栈：

@@ -53,6 +53,10 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
     public static final String INVERT = "INVERT";
     public static final String ISREGEX = "ISREGEX";
     public static final String GREATERTHAN = "GREATERTHAN";
+    public static final String GREATERTHANOREQUAL = "GREATERTHANOREQUAL";
+    public static final String LESSTHAN = "LESSTHAN";
+    public static final String LESSTHANOREQUAL = "LESSTHANOREQUAL";
+    public static final String CONTAINS = "CONTAINS";
 
     private static final boolean USE_JAVA_REGEX = !JMeterUtils.getPropDefault("jmeter.regex.engine", "oro").equalsIgnoreCase("oro");
 
@@ -113,6 +117,38 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
         return getPropertyAsBoolean(GREATERTHAN);
     }
 
+    public void setGreaterThanOrEqual(boolean greaterThanOrEqual) {
+        setProperty(GREATERTHANOREQUAL, greaterThanOrEqual);
+    }
+
+    public boolean isGreaterThanOrEqual() {
+        return getPropertyAsBoolean(GREATERTHANOREQUAL);
+    }
+
+    public void setLessThan(boolean lessThan) {
+        setProperty(LESSTHAN, lessThan);
+    }
+
+    public boolean isLessThan() {
+        return getPropertyAsBoolean(LESSTHAN);
+    }
+
+    public void setLessThanOrEqual(boolean lessThanOrEqual) {
+        setProperty(LESSTHANOREQUAL, lessThanOrEqual);
+    }
+
+    public boolean isLessThanOrEqual() {
+        return getPropertyAsBoolean(LESSTHANOREQUAL);
+    }
+
+    public void setContains(boolean contains) {
+        setProperty(CONTAINS, contains);
+    }
+
+    public boolean isContains() {
+        return getPropertyAsBoolean(CONTAINS);
+    }
+
     public void setIsRegex(boolean flag) {
         setProperty(ISREGEX, flag);
     }
@@ -123,6 +159,7 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
 
     private void doAssert(String jsonString) {
         Object value = JsonPath.read(jsonString, getJsonPath());
+        // 大于
         if (isGreaterThan()) {
             if (isGreaterThan(value)) {
                 return;
@@ -131,6 +168,47 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
                 throw new IllegalStateException(String.format(msg, getExpectedValue(), objectToString(value)));
             }
         }
+
+        // 大于等于
+        if (isGreaterThanOrEqual()) {
+            if (isGreaterThanOrEqual(value)) {
+                return;
+            } else {
+                String msg = "Value expected greaterThanOrEqual to be '%s', but found '%s'";
+                throw new IllegalStateException(String.format(msg, getExpectedValue(), objectToString(value)));
+            }
+        }
+
+        // 小于
+        if (isLessThan()) {
+            if (isLessThan(value)) {
+                return;
+            } else {
+                String msg = "Value expected lessThan to be '%s', but found '%s'";
+                throw new IllegalStateException(String.format(msg, getExpectedValue(), objectToString(value)));
+            }
+        }
+
+        // 小于等于
+        if (isLessThanOrEqual()) {
+            if (isLessThanOrEqual(value)) {
+                return;
+            } else {
+                String msg = "Value expected lessThanOrEqual to be '%s', but found '%s'";
+                throw new IllegalStateException(String.format(msg, getExpectedValue(), objectToString(value)));
+            }
+        }
+
+        // 包含
+        if (isContains()) {
+            if (isContains(Objects.toString(value))) {
+                return;
+            } else {
+                String msg = "Value expected contains to be '%s', but found '%s'";
+                throw new IllegalStateException(String.format(msg, getExpectedValue(), objectToString(value)));
+            }
+        }
+
         if (!isJsonValidationBool()) {
             if (value instanceof JSONArray) {
                 JSONArray arrayValue = (JSONArray) value;
@@ -201,6 +279,60 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
      * @return boolean
      */
     private boolean isGreaterThan(Object subj) {
+        return getCompareResult(subj) > 0;
+    }
+
+    /**
+     * 大于等于
+     * 支持整数，小数
+     *
+     * @param subj 实际结果
+     * @return boolean
+     */
+    private boolean isGreaterThanOrEqual(Object subj) {
+        return getCompareResult(subj) >= 0;
+    }
+
+    /**
+     * 小于
+     * 支持整数，小数
+     *
+     * @param subj 实际结果
+     * @return boolean
+     */
+    private boolean isLessThan(Object subj) {
+        return getCompareResult(subj) < 0;
+    }
+
+    /**
+     * 小于等于
+     * 支持整数，小数
+     *
+     * @param subj 实际结果
+     * @return boolean
+     */
+    private boolean isLessThanOrEqual(Object subj) {
+        return getCompareResult(subj) <= 0;
+    }
+
+    /**
+     * 包含
+     * 支持字符串
+     *
+     * @param subj 实际结果
+     * @return boolean
+     */
+    private boolean isContains(Object subj) {
+        return StringUtils.contains(Objects.toString(subj), getExpectedValue());
+    }
+
+    /**
+     * 获取两个数字比较的结果
+     *
+     * @param subj 实际结果
+     * @return >0：大于；=0：等于；<0:小于
+     */
+    private int getCompareResult(Object subj) {
         String expectedValue = getExpectedValue();
         if (subj == null || StringUtils.isBlank(expectedValue)) {
             String msg = "expectedValue or actualValue is null, expectedValue='%s', actualValue='%s'";
@@ -213,52 +345,7 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
             throw new IllegalStateException(String.format(msg, expectedValue, actualValue));
         }
 
-        int compareTo = Double.valueOf(actualValue).compareTo(Double.valueOf(expectedValue));
-        return compareTo > 0;
-    }
-
-    /**
-     * 大于等于
-     * 支持整数，小数
-     *
-     * @param subj 实际结果
-     * @return boolean
-     */
-    private boolean isGreaterThanOrEqual(Object subj) {
-        return false;
-    }
-
-    /**
-     * 小于
-     * 支持整数，小数
-     *
-     * @param subj 实际结果
-     * @return boolean
-     */
-    private boolean isLessThan(Object subj) {
-        return false;
-    }
-
-    /**
-     * 小于等于
-     * 支持整数，小数
-     *
-     * @param subj 实际结果
-     * @return boolean
-     */
-    private boolean isLessThanOrEqual(Object subj) {
-        return false;
-    }
-
-    /**
-     * 包含
-     * 支持字符串
-     *
-     * @param subj
-     * @return boolean
-     */
-    private boolean contains(Object subj) {
-        return false;
+        return Double.valueOf(actualValue).compareTo(Double.valueOf(expectedValue));
     }
 
     /**
@@ -273,6 +360,7 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
         }
         return str.matches("[+-]?[0-9]+(\\.[0-9]{1,10})?");
     }
+
 
     @Override
     public AssertionResult getResult(SampleResult samplerResult) {

@@ -46,6 +46,10 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
     private static final String JSON_ASSERTION_PATH = "json_assertion_path";
     private static final String JSON_ASSERTION_VALIDATION = "json_assertion_validation";
     private static final String JSON_ASSERTION_GREATERTHAN = "json_assertion_greaterthan";
+    private static final String JSON_ASSERTION_GREATERTHANOREQUAL = "json_assertion_greaterthanorequal";
+    private static final String JSON_ASSERTION_LESSTHAN = "json_assertion_lessthan";
+    private static final String JSON_ASSERTION_LESSTHANOREQUAL = "json_assertion_lessthanorequal";
+    private static final String JSON_ASSERTION_CONTAINS = "json_assertion_contains";
     private static final String JSON_ASSERTION_REGEX = "json_assertion_regex";
     private static final String JSON_ASSERTION_EXPECTED_VALUE = "json_assertion_expected_value";
     private static final String JSON_ASSERTION_NULL = "json_assertion_null";
@@ -59,6 +63,10 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
     protected JCheckBox invert = null;
     protected JCheckBox isRegex;
     protected JCheckBox greaterThan = null;
+    protected JCheckBox greaterThanOrEqual = null;
+    protected JCheckBox lessThan = null;
+    protected JCheckBox lessThanOrEqual = null;
+    protected JCheckBox contains = null;
 
     public JSONPathAssertionGui() {
         init();
@@ -74,6 +82,12 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
 
         jsonValidation.addChangeListener(this);
         expectNull.addChangeListener(this);
+        isRegex.addChangeListener(this);
+        greaterThan.addChangeListener(this);
+        greaterThanOrEqual.addChangeListener(this);
+        lessThan.addChangeListener(this);
+        lessThanOrEqual.addChangeListener(this);
+        contains.addChangeListener(this);
     }
 
     protected JPanel buildPanel() {
@@ -90,6 +104,22 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
         greaterThan = new JCheckBox();
         panel.add(JMeterUtils.labelFor(greaterThan, JSON_ASSERTION_GREATERTHAN));
         panel.add(greaterThan, "span");
+
+        greaterThanOrEqual = new JCheckBox();
+        panel.add(JMeterUtils.labelFor(greaterThanOrEqual, JSON_ASSERTION_GREATERTHANOREQUAL));
+        panel.add(greaterThanOrEqual, "span");
+
+        lessThan = new JCheckBox();
+        panel.add(JMeterUtils.labelFor(lessThan, JSON_ASSERTION_LESSTHAN));
+        panel.add(lessThan, "span");
+
+        lessThanOrEqual = new JCheckBox();
+        panel.add(JMeterUtils.labelFor(lessThanOrEqual, JSON_ASSERTION_LESSTHANOREQUAL));
+        panel.add(lessThanOrEqual, "span");
+
+        contains = new JCheckBox();
+        panel.add(JMeterUtils.labelFor(contains, JSON_ASSERTION_CONTAINS));
+        panel.add(contains, "span");
 
         isRegex = new JCheckBox();
         panel.add(JMeterUtils.labelFor(isRegex, JSON_ASSERTION_REGEX));
@@ -119,6 +149,10 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
         invert.setSelected(false);
         isRegex.setSelected(true);
         greaterThan.setSelected(false);
+        greaterThanOrEqual.setSelected(false);
+        lessThan.setSelected(false);
+        lessThanOrEqual.setSelected(false);
+        contains.setSelected(false);
 
     }
 
@@ -146,6 +180,10 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
             jpAssertion.setInvert(invert.isSelected());
             jpAssertion.setIsRegex(isRegex.isSelected());
             jpAssertion.setGreaterThan(greaterThan.isSelected());
+            jpAssertion.setGreaterThanOrEqual(greaterThanOrEqual.isSelected());
+            jpAssertion.setLessThan(lessThan.isSelected());
+            jpAssertion.setLessThanOrEqual(lessThanOrEqual.isSelected());
+            jpAssertion.setContains(contains.isSelected());
         }
     }
 
@@ -161,15 +199,23 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
             invert.setSelected(jpAssertion.isInvert());
             isRegex.setSelected(jpAssertion.isUseRegex());
             greaterThan.setSelected(jpAssertion.isGreaterThan());
+            greaterThanOrEqual.setSelected(jpAssertion.isGreaterThanOrEqual());
+            lessThan.setSelected(jpAssertion.isLessThan());
+            lessThanOrEqual.setSelected(jpAssertion.isLessThanOrEqual());
+            contains.setSelected(jpAssertion.isContains());
         }
     }
 
     @Override
     public void stateChanged(ChangeEvent e) {
         // 控件联动
-        jsonValidation.setEnabled(!greaterThan.isSelected() && !expectNull.isSelected());
-        jsonValue.setEnabled((jsonValidation.isSelected() || greaterThan.isSelected()) && !expectNull.isSelected());
-        isRegex.setEnabled(jsonValidation.isSelected() && !expectNull.isSelected() && !greaterThan.isSelected());
-        greaterThan.setEnabled(!jsonValidation.isSelected() && !expectNull.isSelected() && !isRegex.isSelected());
+        jsonValidation.setEnabled(!greaterThan.isSelected() && !greaterThanOrEqual.isSelected() && !lessThan.isSelected() && !lessThanOrEqual.isSelected() && !contains.isSelected() && !expectNull.isSelected());
+        jsonValue.setEnabled((jsonValidation.isSelected() || greaterThan.isSelected() || greaterThanOrEqual.isSelected() || lessThan.isSelected() || lessThanOrEqual.isSelected() || contains.isSelected()) && !expectNull.isSelected());
+        isRegex.setEnabled(jsonValidation.isSelected() && !expectNull.isSelected() && !greaterThan.isSelected() && !greaterThanOrEqual.isSelected() && !lessThan.isSelected() && !lessThanOrEqual.isSelected() && !contains.isSelected());
+        greaterThan.setEnabled(!jsonValidation.isSelected() && !expectNull.isSelected() && !isRegex.isSelected() && !greaterThanOrEqual.isSelected() && !lessThan.isSelected() && !lessThanOrEqual.isSelected() && !contains.isSelected());
+        greaterThanOrEqual.setEnabled(!jsonValidation.isSelected() && !expectNull.isSelected() && !isRegex.isSelected() && !greaterThan.isSelected() && !lessThan.isSelected() && !lessThanOrEqual.isSelected() && !contains.isSelected());
+        lessThan.setEnabled(!jsonValidation.isSelected() && !expectNull.isSelected() && !isRegex.isSelected() && !greaterThan.isSelected() && !greaterThanOrEqual.isSelected() && !lessThanOrEqual.isSelected() && !contains.isSelected());
+        lessThanOrEqual.setEnabled(!jsonValidation.isSelected() && !expectNull.isSelected() && !isRegex.isSelected() && !greaterThan.isSelected() && !greaterThanOrEqual.isSelected() && !lessThan.isSelected() && !contains.isSelected());
+        lessThanOrEqual.setEnabled(!jsonValidation.isSelected() && !expectNull.isSelected() && !isRegex.isSelected() && !greaterThan.isSelected() && !greaterThanOrEqual.isSelected() && !lessThan.isSelected() && !lessThanOrEqual.isSelected());
     }
 }

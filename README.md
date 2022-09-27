@@ -1,15 +1,14 @@
 
 ## 新增功能:
-<li>HTTP代理服务器：一次录制过程中，根据method、url、parameter去重
-<li>json断言，大于某个数字，支持整数和小数点(小数点位数最长支持10位)
+<li>HTTP录制支持去重：根据method、url、parameter去重
+<li>json断言支持大于、大于等于、小于、小于等于，仅支持整数，小数
+<li>json断言支持包含，仅支持字符串
 
-![img_10.png](img_10.png)
-
-![img_8.png](img_8.png)
+![img_11.png](img_11.png)
 
 
 以下操作均在Macos操作系统
-
+<br/>
 ## HTTP代理服务器去重逻辑，代码改动：
 NewDriver.java
 ### 使这个条件不生效，OS_NAME_LC.startsWith("mac os x")

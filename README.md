@@ -42,20 +42,22 @@ simpleHttpRequests.clear();
 ![img_7.png](img_7.png)
 
 ##【1】IDEA启动：
---双击createDist
+### 双击createDist
 ![img.png](img.png)
 
---配置-Djmeter.home为项目根目录
+### 配置-Djmeter.home为项目根目录
 ![img_1.png](img_1.png)
 
---右键启动
+### 右键启动
 NewDriver.main()
-
 
 ##【2】二进制启动
 sh bin/jmeter.sh
 
-##【3】开始录制
+##【3】打包
+tar -czf jmeter-bin.tar.gz bin lib
+
+##【4】开始录制
 ![img_2.png](img_2.png)
 
 ### 同一个接口请求多次

@@ -15,7 +15,6 @@ https://github.com/fusu-qa/jmeter
 ![img_13.png](img_13.png)
 
 
-以下操作均在Macos操作系统
 <br/>
 ## 去重逻辑代码改动
 NewDriver.java

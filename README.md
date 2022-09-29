@@ -1,3 +1,11 @@
+## 背景
+- 通过Jmeter录制前端接口时会出现很多重复接口，需要人工删除，维护成本较高
+- 原生Jmeter JSON断言支持等于、正则表达式、判空、反向断言功能，不支持其他关系运算符(大于、大于等于、小于、小于等于、包含)
+
+## 开源地址
+https://gitee.com/fusu-qa/jmeter
+<br/>
+https://github.com/fusu-qa/jmeter
 
 ## 新增功能:
 - HTTP录制支持去重：根据method、url、parameter去重
@@ -9,7 +17,7 @@
 
 以下操作均在Macos操作系统
 <br/>
-## HTTP代理服务器去重逻辑，代码改动：
+## 去重逻辑代码改动
 NewDriver.java
 ### 使这个条件不生效，OS_NAME_LC.startsWith("mac os x")
 
@@ -32,9 +40,9 @@ e.printStackTrace();
 ### 清空集合
 simpleHttpRequests.clear();
 
-### 安装chrome浏览器插件：SwitchyOmega
+## 安装chrome浏览器插件：SwitchyOmega
 
-### 指定录制域名使用代理：localhost:8888
+## 指定录制域名使用代理：localhost:8888
 
 ![img_5.png](img_5.png)
 

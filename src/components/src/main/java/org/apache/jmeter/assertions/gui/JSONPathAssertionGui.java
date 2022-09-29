@@ -216,6 +216,6 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
         greaterThanOrEqual.setEnabled(!jsonValidation.isSelected() && !expectNull.isSelected() && !isRegex.isSelected() && !greaterThan.isSelected() && !lessThan.isSelected() && !lessThanOrEqual.isSelected() && !contains.isSelected());
         lessThan.setEnabled(!jsonValidation.isSelected() && !expectNull.isSelected() && !isRegex.isSelected() && !greaterThan.isSelected() && !greaterThanOrEqual.isSelected() && !lessThanOrEqual.isSelected() && !contains.isSelected());
         lessThanOrEqual.setEnabled(!jsonValidation.isSelected() && !expectNull.isSelected() && !isRegex.isSelected() && !greaterThan.isSelected() && !greaterThanOrEqual.isSelected() && !lessThan.isSelected() && !contains.isSelected());
-        lessThanOrEqual.setEnabled(!jsonValidation.isSelected() && !expectNull.isSelected() && !isRegex.isSelected() && !greaterThan.isSelected() && !greaterThanOrEqual.isSelected() && !lessThan.isSelected() && !lessThanOrEqual.isSelected());
+        contains.setEnabled(!jsonValidation.isSelected() && !expectNull.isSelected() && !isRegex.isSelected() && !greaterThan.isSelected() && !greaterThanOrEqual.isSelected() && !lessThan.isSelected() && !lessThanOrEqual.isSelected());
     }
 }

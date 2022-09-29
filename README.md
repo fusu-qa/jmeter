@@ -15,7 +15,6 @@ https://github.com/fusu-qa/jmeter
 ![img_13.png](img_13.png)
 
 
-<br/>
 ## 去重逻辑代码改动
 NewDriver.java
 ### 使这个条件不生效，OS_NAME_LC.startsWith("mac os x")

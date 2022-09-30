@@ -82,3 +82,5 @@ jmeter/blob/master/HTTP代理服务器.jmx
 
 ## HTTP代理服务器调用栈：
 ![img_6.png](img_6.png)
+
+如何觉得对自己工作有所帮助，帮忙点个Star，多谢！！！

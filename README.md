@@ -13,7 +13,7 @@ https://github.com/fusu-qa/jmeter
 - json断言支持包含，仅支持字符串
 
 ![img_13.png](img_13.png)
-
+![img_8.png](img_8.png)
 
 ## 去重逻辑代码改动
 NewDriver.java

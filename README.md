@@ -11,10 +11,11 @@ https://github.com/fusu-qa/jmeter
 - HTTP录制支持去重：根据method、url、parameter去重
 - json断言支持大于、大于等于、小于、小于等于，仅支持整数，小数
 - json断言支持包含，仅支持字符串
+- json断言支持降噪处理，通过配置jsonpath，过滤掉干扰字段比如时间搓、随机数等，提高断言成功率
+![img_10.png](img_10.png)
 
-![img_13.png](img_13.png)
-![img_8.png](img_8.png)
-
+https://github.com/json-path/JsonPath
+![img_9.png](img_9.png)
 ## 去重逻辑代码改动
 NewDriver.java
 ### 使这个条件不生效，OS_NAME_LC.startsWith("mac os x")

@@ -17,11 +17,7 @@
 
 package org.apache.jmeter.assertions.gui;
 
-import java.awt.*;
-
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import net.miginfocom.swing.MigLayout;
 
 import org.apache.jmeter.assertions.JSONPathAssertion;
 import org.apache.jmeter.gui.GUIMenuSortOrder;
@@ -31,7 +27,11 @@ import org.apache.jmeter.gui.util.JTextScrollPane;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.util.JMeterUtils;
 
-import net.miginfocom.swing.MigLayout;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import java.awt.*;
 
 /**
  * Java class representing GUI for the {@link JSONPathAssertion} component in JMeter
@@ -52,11 +52,13 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
     private static final String JSON_ASSERTION_CONTAINS = "json_assertion_contains";
     private static final String JSON_ASSERTION_REGEX = "json_assertion_regex";
     private static final String JSON_ASSERTION_EXPECTED_VALUE = "json_assertion_expected_value";
+    private static final String JSON_PATH_VALUE = "json_path_value";
     private static final String JSON_ASSERTION_NULL = "json_assertion_null";
     private static final String JSON_ASSERTION_INVERT = "json_assertion_invert";
     private static final String JSON_ASSERTION_TITLE = "json_assertion_title";
 
     protected JTextField jsonPath = null;
+    protected JSyntaxTextArea jsonPathValue = null;
     protected JSyntaxTextArea jsonValue = null;
     protected JCheckBox jsonValidation = null;
     protected JCheckBox expectNull = null;
@@ -97,6 +99,10 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
         panel.add(JMeterUtils.labelFor(jsonPath, JSON_ASSERTION_PATH));
         panel.add(jsonPath, "span, growx");
 
+        jsonPathValue = JSyntaxTextArea.getInstance(5, 60);
+        panel.add(JMeterUtils.labelFor(jsonPathValue, JSON_PATH_VALUE));
+        panel.add(JTextScrollPane.getInstance(jsonPathValue));
+
         jsonValidation = new JCheckBox();
         panel.add(JMeterUtils.labelFor(jsonValidation, JSON_ASSERTION_VALIDATION));
         panel.add(jsonValidation, "span");
@@ -125,10 +131,6 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
         panel.add(JMeterUtils.labelFor(isRegex, JSON_ASSERTION_REGEX));
         panel.add(isRegex, "span");
 
-        jsonValue = JSyntaxTextArea.getInstance(5, 60);
-        panel.add(JMeterUtils.labelFor(jsonValue, JSON_ASSERTION_EXPECTED_VALUE));
-        panel.add(JTextScrollPane.getInstance(jsonValue));
-
         expectNull = new JCheckBox();
         panel.add(JMeterUtils.labelFor(expectNull, JSON_ASSERTION_NULL));
         panel.add(expectNull, "span");
@@ -136,6 +138,11 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
         invert = new JCheckBox();
         panel.add(JMeterUtils.labelFor(invert, JSON_ASSERTION_INVERT));
         panel.add(invert, "span");
+
+        jsonValue = JSyntaxTextArea.getInstance(5, 60);
+        panel.add(JMeterUtils.labelFor(jsonValue, JSON_ASSERTION_EXPECTED_VALUE));
+        panel.add(JTextScrollPane.getInstance(jsonValue));
+
         return panel;
     }
 
@@ -144,6 +151,7 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
         super.clearGui();
         jsonPath.setText("");
         jsonValue.setText("");
+        jsonPathValue.setText("");
         jsonValidation.setSelected(false);
         expectNull.setSelected(false);
         invert.setSelected(false);
@@ -175,6 +183,7 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
             JSONPathAssertion jpAssertion = (JSONPathAssertion) element;
             jpAssertion.setJsonPath(jsonPath.getText());
             jpAssertion.setExpectedValue(jsonValue.getText());
+            jpAssertion.setJsonPathValue(jsonPathValue.getText());
             jpAssertion.setJsonValidationBool(jsonValidation.isSelected());
             jpAssertion.setExpectNull(expectNull.isSelected());
             jpAssertion.setInvert(invert.isSelected());
@@ -194,6 +203,7 @@ public class JSONPathAssertionGui extends AbstractAssertionGui implements Change
             JSONPathAssertion jpAssertion = (JSONPathAssertion) element;
             jsonPath.setText(jpAssertion.getJsonPath());
             jsonValue.setText(jpAssertion.getExpectedValue());
+            jsonPathValue.setText(jpAssertion.getJsonPathValue());
             jsonValidation.setSelected(jpAssertion.isJsonValidationBool());
             expectNull.setSelected(jpAssertion.isExpectNull());
             invert.setSelected(jpAssertion.isInvert());

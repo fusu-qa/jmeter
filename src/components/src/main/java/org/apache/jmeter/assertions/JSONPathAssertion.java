@@ -17,10 +17,15 @@
 
 package org.apache.jmeter.assertions;
 
-import java.io.Serializable;
-import java.text.DecimalFormat;
-import java.util.Map;
-import java.util.Objects;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
+
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.samplers.SampleResult;
@@ -31,11 +36,10 @@ import org.apache.oro.text.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-import net.minidev.json.JSONValue;
-
-import com.jayway.jsonpath.JsonPath;
+import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * This is main class for JSONPath Assertion which verifies assertion on
@@ -47,6 +51,7 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
     private static final Logger log = LoggerFactory.getLogger(JSONPathAssertion.class);
     private static final long serialVersionUID = 2L;
     public static final String JSONPATH = "JSON_PATH";
+    public static final String JSONPATHVALUE = "JSONPATH_VALUE";
     public static final String EXPECTEDVALUE = "EXPECTED_VALUE";
     public static final String JSONVALIDATION = "JSONVALIDATION";
     public static final String EXPECT_NULL = "EXPECT_NULL";
@@ -75,6 +80,14 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
 
     public void setJsonPath(String jsonPath) {
         setProperty(JSONPATH, jsonPath);
+    }
+
+    public String getJsonPathValue() {
+        return getPropertyAsString(JSONPATHVALUE);
+    }
+
+    public void setJsonPathValue(String jsonPathValue) {
+        setProperty(JSONPATHVALUE, jsonPathValue);
     }
 
     public String getExpectedValue() {
@@ -256,9 +269,9 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
         return isEquals(value);
     }
 
-    private boolean isEquals(Object subj) {
+    private boolean isEquals(Object actual) {
         if (isUseRegex()) {
-            String str = objectToString(subj);
+            String str = objectToString(actual);
             if (USE_JAVA_REGEX) {
                 return JMeterUtils.compilePattern(getExpectedValue()).matcher(str).matches();
             } else {
@@ -267,7 +280,28 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
             }
         } else {
             Object expected = JSONValue.parse(getExpectedValue());
-            return Objects.equals(expected, subj);
+            String jsonPathValue = getJsonPathValue();
+            if (StringUtils.isBlank(jsonPathValue)) {
+                return Objects.equals(expected, actual);
+            }
+            try {
+                String expectedJson = toJsonString(expected);
+                String actualJson = toJsonString(actual);
+                String[] split = StringUtils.split(jsonPathValue, ",");
+                for (String path : split) {
+                    expectedJson = removeByJsonPath(expectedJson, path);
+                    actualJson = removeByJsonPath(actualJson, path);
+                }
+
+                boolean equals = compare(expectedJson, actualJson);
+                if (!equals) {
+                    String msg = "Value expected to be '%s', but found '%s'";
+                    throw new IllegalStateException(String.format(msg, expectedJson, actualJson));
+                }
+                return true;
+            } catch (Exception e) {
+                return Objects.equals(expected, actual);
+            }
         }
     }
 
@@ -424,5 +458,22 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
     @Override
     public void threadFinished() {
         decimalFormatter.remove();
+    }
+
+    private String removeByJsonPath(String json, String path) {
+        DocumentContext documentContext = JsonPath.parse(json);
+        return documentContext.delete(path).jsonString();
+    }
+
+    private String toJsonString(Object json) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.writeValueAsString(json);
+    }
+
+    private boolean compare(String source, String target) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode1 = objectMapper.readTree(source);
+        JsonNode jsonNode2 = objectMapper.readTree(target);
+        return jsonNode1.equals(jsonNode2);
     }
 }

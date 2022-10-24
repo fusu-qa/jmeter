@@ -243,13 +243,13 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
         }
 
         if (isExpectNull()) {
-            throw new IllegalStateException(String.format("Value expected to be null, but found '%s'", value));
+            throw new IllegalStateException(String.format("Value expected to be: null, but found: \n %s", value));
         } else {
             String msg;
             if (isUseRegex()) {
                 msg = "Value expected to match regexp '%s', but it did not match: '%s'";
             } else {
-                msg = "Value expected to be '%s', but found '%s'";
+                msg = "Value expected to be: \n %s \n but found: \n %s";
             }
             throw new IllegalStateException(String.format(msg, getExpectedValue(), objectToString(value)));
         }
@@ -295,7 +295,7 @@ public class JSONPathAssertion extends AbstractTestElement implements Serializab
 
                 boolean equals = compare(expectedJson, actualJson);
                 if (!equals) {
-                    String msg = "Value expected to be '%s', but found '%s'";
+                    String msg = "Value expected to be: \n %s \n but found: \n %s";
                     throw new IllegalStateException(String.format(msg, expectedJson, actualJson));
                 }
                 return true;
